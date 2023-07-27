@@ -1,5 +1,7 @@
 # dj-meneo
 DJ Meneo - Discord Bot made with discordjs in typescript.
+
+
 This is my personal Discord Bot.
 Have a look at it, use what you think is useful.
 
