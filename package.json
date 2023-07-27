@@ -1,0 +1,26 @@
+{
+  "name": "dj-meneo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "tsc && node copyPublic.js",
+    "prod": "node ./dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.16.0",
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "ffmpeg-static": "^5.1.0",
+    "libsodium-wrappers": "^0.7.11",
+    "play-dl": "^1.9.6",
+    "youtube-sr": "^4.3.4"
+  }
+}

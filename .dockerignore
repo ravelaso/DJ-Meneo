@@ -1,0 +1,6 @@
+src
+node_modules
+.github
+package-lock.lock
+copySounds.js
+.gitignore
