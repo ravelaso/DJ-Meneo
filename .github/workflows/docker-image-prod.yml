@@ -6,11 +6,11 @@ on:
   pull_request:
     types:
       - closed
-  
+    branches: ["main"]
 
 jobs:
   if_merged:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
      - name: Checkout repository
