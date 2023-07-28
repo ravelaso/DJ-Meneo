@@ -4,7 +4,7 @@ import fs from "fs"
 import { ChatInputCommandInteraction } from "discord.js"
 import player from "../../structure/Player"
 import { audioType } from "../../utils"
-import { createSixtoloList, createSongEmbed } from "../../utils/embeds"
+import { createSixtoloEmbed, createSongEmbed } from "../../utils/embeds"
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -57,7 +57,7 @@ module.exports = {
         return await interaction.reply({ content: 'No .mp3 files found in the sixtolo folder.', ephemeral: true });
       }
       const fileList = files.map(file => `${file.slice(0, -4)}`).join('\n🔊  ');
-      const embed = createSixtoloList(fileList)
+      const embed = createSixtoloEmbed(fileList)
       await interaction.reply({ embeds: [embed], ephemeral: true });
     }
     else if (subcommand === 'play') {
