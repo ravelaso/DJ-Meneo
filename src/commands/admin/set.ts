@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { config } from "../../utils";
+import { createGeneralEmbed } from "../../utils/embeds";
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,11 +30,13 @@ module.exports = {
         const input: string = interaction.options.getString("url")!;
         if (subcommand === 'sixtolo'){
             config.SixtoloIMG = input
-            await interaction.reply({content:'Done!',ephemeral:true})
+            const embed = createGeneralEmbed('Sixtolo Image Setup', `Sixtolo Image changed to: ${input}`)
+            await interaction.reply({embeds:[embed], ephemeral:true})
         }
         else if (subcommand === 'toc'){
             config.TOCPlaylist = input
-            await interaction.reply({content:'Done!',ephemeral:true})
+            const embed = createGeneralEmbed('ToC Playlist Setup', `Changed playlist for /toc to: ${input}`)
+            await interaction.reply({embeds:[embed], ephemeral:true})
         }
     }
 }

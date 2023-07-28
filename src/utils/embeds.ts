@@ -28,7 +28,7 @@ export function createSongEmbed(song: Song, text?: string): EmbedBuilder {
         return embed
     }
 }
-export function createHelpMessage() {
+export function createHelpEmbed() {
     const cachedCommands = bot.commands
     const embed = new EmbedBuilder()
         .setTitle('DJ-Meneo - Commands')
@@ -43,16 +43,23 @@ export function createHelpMessage() {
     });
     return embed
 }
-export function createSixtoloList(fileList: string) {
+export function createSixtoloEmbed(fileList: string) {
     const embed = new EmbedBuilder()
         .setTitle('DJ-Meneo - Sixtolo Audios')
         .setDescription(`Here is a list of available Sixtolo Audios:\n🔊 ${fileList}`)
         .setThumbnail(`${config.SixtoloIMG}`)
         .setColor('#5158db');
-            
+
     return embed
 }
-
+export function createGeneralEmbed(title?: string, desc?: string) {
+    const embed = new EmbedBuilder()
+        .setTitle(`DJ-Meneo - General:\n ${title}`)
+        .setDescription(`This is a general response for internal commands:\n ${desc}`)
+        .setColor('#db8f51');
+        
+    return embed
+}
 export function createRaidMessage() {
     // TODO
 }
