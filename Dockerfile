@@ -1,5 +1,5 @@
-# Use the latest Alpine Linux base image
-FROM alpine:latest
+# Use the latest Node.js base image
+FROM node:latest
 
 # Set the working directory to /app
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN apk add --update nodejs npm
 
 # Copy the contents of the /dist folder from the host to the /app folder in the container
 COPY /dist /app
-COPY .env.template /app/.env
+COPY .env /app/.env
 COPY package.json /app/package.json
 
 # Install the Node.js application dependencies
