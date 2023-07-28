@@ -11,6 +11,7 @@ RUN apk add --update nodejs npm
 COPY /dist /app
 COPY package.json /app/package.json
 COPY .env /app/.env
+
 # Install the Node.js application dependencies
 RUN npm install
 
