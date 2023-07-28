@@ -23,8 +23,8 @@ jobs:
        run: npm run build
      - name: Create .env file
        run: | 
-        echo "Token=${{ secrets.BOT_TOKEN }}" > .env
-        echo "ClientID=${{ secrets.BOT_CLIENTID }}" >> .env
+        echo "Token=${{ secrets.BOT_TOKEN_PROD }}" > .env
+        echo "ClientID=${{ secrets.BOT_CLIENTID_PROD }}" >> .env
         echo "GuildID=${{ secrets.BOT_GUILDID }}" >> .env
         echo "SixtoloIMG=${{ secrets.BOT_SIXTOLOIMG }}" >> .env
         echo "TOCPlaylist=${{ secrets.BOT_TOCPLAYLIST }}" >> .env
