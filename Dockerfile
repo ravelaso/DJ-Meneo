@@ -9,7 +9,7 @@ RUN apk add --update nodejs npm
 
 # Copy the contents of the /dist folder from the host to the /app folder in the container
 COPY /dist /app
-COPY .env /app/.env
+COPY .env.template /app/.env
 COPY package.json /app/package.json
 
 # Install the Node.js application dependencies
@@ -21,4 +21,3 @@ EXPOSE 3000
 
 # Start the Node.js application
 CMD ["node", "index.js"]
-

@@ -10,7 +10,7 @@ Have a look at it, use what you think is useful.
   ```shell
   npm install
   ````
-2. Create a .env file like the .env.example and fill the values.
+2. Create a .env file like the .env.template and fill the values.
 
 3. Command to build:
   ```shell
