@@ -31,8 +31,8 @@ module.exports = {
     const inputType = player.checkInput(input);
     if (inputType === urlType.youtubeVideo) {
       console.log("Play Youtube Command Received!")
-      const yt = await YouTube.searchOne(input)
-      player.addToQueue(yt.url,audioType.Youtube,yt.title,undefined,yt.thumbnail!.url)
+      const yt = await YouTube.getVideo(input)
+      player.addToQueue(input,audioType.Youtube,yt.title,undefined,yt.thumbnail!.url)
       if (player.isPlaying) {
           const nextSong = player.queue.nextSong()
           const embed = createSongEmbed(nextSong!,"Queued Song: ")
