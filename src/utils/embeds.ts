@@ -1,31 +1,28 @@
-import { EmbedBuilder } from 'discord.js';
-import { Song, audioType, config } from '.';
+import {EmbedBuilder} from 'discord.js';
+import {audioType, config, Song} from '.';
 import bot from '../structure/Client';
 
 export function createSongEmbed(song: Song, text?: string): EmbedBuilder {
     if (song.type === audioType.Sixtolo) {
-        const embed = new EmbedBuilder()
+        return new EmbedBuilder()
             .setTitle(`🔊 ${text} ${song.filename}`)
             .setImage(config.SixtoloIMG)
             .setFooter({
                 text: `DJ-Meneo - Sixtolo`,
             })
             .setColor('#5158db');
-        return embed;
     }
     if (song.type === audioType.Youtube) {
-        const embed = new EmbedBuilder()
+        return new EmbedBuilder()
             .setTitle(`🔊 ${text} ${song.name}\n${song.url}`)
             .setImage(song.thumbnail!)
             .setFooter({
                 text: `DJ-Meneo - Youtube`,
             })
             .setColor('#5158db');
-        return embed;
     }
     else {
-        const embed = new EmbedBuilder()
-        return embed
+        return new EmbedBuilder()
     }
 }
 export function createHelpEmbed() {
@@ -44,22 +41,15 @@ export function createHelpEmbed() {
     return embed
 }
 export function createSixtoloEmbed(fileList: string) {
-    const embed = new EmbedBuilder()
+    return new EmbedBuilder()
         .setTitle('DJ-Meneo - Sixtolo Audios')
         .setDescription(`Here is a list of available Sixtolo Audios:\n🔊 ${fileList}`)
         .setThumbnail(`${config.SixtoloIMG}`)
-        .setColor('#5158db');
-
-    return embed
+        .setColor('#5158db')
 }
 export function createGeneralEmbed(title?: string, desc?: string) {
-    const embed = new EmbedBuilder()
+    return new EmbedBuilder()
         .setTitle(`DJ-Meneo - General:\n ${title}`)
         .setDescription(`This is a general response for internal commands:\n ${desc}`)
-        .setColor('#db8f51');
-        
-    return embed
-}
-export function createRaidMessage() {
-    // TODO
+        .setColor('#db8f51')
 }

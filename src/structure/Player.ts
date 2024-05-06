@@ -18,7 +18,6 @@ export class Player {
   isPlaying: boolean
   connection: VoiceConnection | undefined
   AudioPlayer: AudioPlayer
-  audioType?: audioType
   currentSong: Song | undefined
   resource: AudioResource | undefined
   constructor() {
@@ -43,7 +42,7 @@ export class Player {
   }
   async playAudio(channel?: VoiceBasedChannel, interaction?: ChatInputCommandInteraction) {
     try {
-      if (this.isPlaying === true) {
+      if (this.isPlaying) {
         return
       }
       if (this.queue.isEmpty()) { this.currentSong = undefined; this.AudioPlayer.stop(true);console.log("Queue is Empty! Returning"); return }
@@ -86,7 +85,7 @@ export class Player {
     for (const video of videos) {
       const url = `https://www.youtube.com/watch?v=${video.id}`
       const type = audioType.Youtube
-      this.addToQueue(url, type, video.title, undefined, video.thumbnail?.url);
+      await this.addToQueue(url, type, video.title, undefined, video.thumbnail?.url);
     }
   }
   async addToQueue(url: string, type: audioType, name?: string, filename?: string, thumbnail?: string) {
@@ -102,14 +101,15 @@ export class Player {
       this.connection = undefined; // Set connection to undefined after destroying it
     }
   }
+  
   async skip() {
     this.AudioPlayer.stop()
-    this.playAudio();
+    await this.playAudio();
   }
-  async pause() {
-    this.AudioPlayer.pause()
-    setTimeout(() => this.AudioPlayer.unpause(), 15_000);
-  }
+  // async pause() {
+  //   this.AudioPlayer.pause()
+  //   setTimeout(() => this.AudioPlayer.unpause(), 15_000);
+  // }
   public checkInput(input: string) {
     const youtubeVideoPattern = /^(https?:\/\/)?(www\.)?(m\.|music\.)?(youtube\.com|youtu\.?be)\/.+/;
     const youtubePlaylistPattern = input.match(/list=([a-zA-Z0-9_-]+)/)?.[1];

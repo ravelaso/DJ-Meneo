@@ -1,4 +1,3 @@
-import { Thumbnail } from "youtube-sr";
 import { Song, audioType} from "../utils";
 export default class Queue {
   private songs: Song[];

@@ -39,24 +39,24 @@ module.exports = {
         console.log('Sixtolo command received');
         const filename = files[Math.floor(Math.random() * files.length)];
         const filePath = path.join(folderPath, filename);
-        player.addToQueue(filePath, audioType.Sixtolo, filename)
+        await player.addToQueue(filePath, audioType.Sixtolo, filename)
         if (player.isPlaying) {
           await interaction!.reply({
             content: `Added to Queue! 🔊 ${filename}`
           });
         } else {
-          player.playAudio(voiceChannel, interaction)
+          await player.playAudio(voiceChannel, interaction)
         }
       }
       else if (subcommand === 'youtube') {
         console.log('Youtube command received');
-        await player.queue.addSong("https://www.youtube.com/watch?v=BZP1rYjoBgI", audioType.Youtube)
+        player.queue.addSong("https://www.youtube.com/watch?v=BZP1rYjoBgI", audioType.Youtube)
         if (player.isPlaying) {
           await interaction!.reply({
             content: `🔊 Added to Queue!`
           });
         } else {
-          player.playAudio(voiceChannel, interaction)
+          await player.playAudio(voiceChannel, interaction)
         }
       }
       else if (subcommand === 'playlist') {
@@ -66,15 +66,15 @@ module.exports = {
               content: `🔊 Added to Queue!`
             });
           } else {
-            player.playAudio(voiceChannel, interaction)
+            await player.playAudio(voiceChannel, interaction)
           }
       }
       else if (subcommand === 'stop'){
-        player.stop()
+        await player.stop()
         await interaction!.reply("Player stopped!")
       }
       else if(subcommand === 'skip'){
-        player.skip()
+        await player.skip()
         await interaction!.reply("Song Skipped!")
       }
     } catch (err) {

@@ -6,7 +6,6 @@ dotenv.config()
 export const config = {
   Token: process.env.Token!,
   ClientID: process.env.ClientID!,
-  GuildID: process.env.GuildID!,
   SixtoloIMG: process.env.SixtoloIMG!,
   TOCPlaylist: process.env.TOCPlaylist!
 }
@@ -19,8 +18,7 @@ export type Command = {
 // Enum
 export enum audioType {
     Sixtolo,
-    Youtube,
-    SoundCloud
+    Youtube
   }
 
 export enum urlType {

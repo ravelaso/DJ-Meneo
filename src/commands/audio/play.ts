@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandStringOption, SlashCommandBuilder, underscore } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandStringOption, SlashCommandBuilder } from "discord.js";
 import player from "../../structure/Player";
 import { audioType, urlType } from "../../utils";
 import YouTube from "youtube-sr";
@@ -32,14 +32,14 @@ module.exports = {
     if (inputType === urlType.youtubeVideo) {
       console.log("Play Youtube Command Received!")
       const yt = await YouTube.getVideo(input)
-      player.addToQueue(input,audioType.Youtube,yt.title,undefined,yt.thumbnail!.url)
+      await player.addToQueue(input, audioType.Youtube, yt.title, undefined, yt.thumbnail!.url)
       if (player.isPlaying) {
           const nextSong = player.queue.nextSong()
           const embed = createSongEmbed(nextSong!,"Queued Song: ")
           await interaction.reply({embeds:[embed]})
       } else {
         await interaction.deferReply()
-        player.playAudio(channel, interaction)
+        await player.playAudio(channel, interaction)
         
       }
     }
@@ -52,20 +52,20 @@ module.exports = {
           await interaction.reply({embeds:[embed]})
       } else {
         await interaction.deferReply()
-        player.playAudio(channel, interaction)
+        await player.playAudio(channel, interaction)
         
       }
     }
     else if (inputType === urlType.unknown){
       const yt = await YouTube.searchOne(input)
-      player.addToQueue(yt.url,audioType.Youtube,yt.title,undefined,yt.thumbnail!.url)
+      await player.addToQueue(yt.url, audioType.Youtube, yt.title, undefined, yt.thumbnail!.url)
       if (player.isPlaying) {
           const nextSong = player.queue.nextSong()
           const embed = createSongEmbed(nextSong!,"Queued Song: ")
           await interaction.reply({embeds:[embed]})
       } else {
         await interaction.deferReply()
-        player.playAudio(channel, interaction)
+        await player.playAudio(channel, interaction)
       }
     }
   },

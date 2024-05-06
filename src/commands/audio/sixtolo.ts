@@ -44,13 +44,13 @@ module.exports = {
       }
       const filename = files[Math.floor(Math.random() * files.length)];
       const filePath = path.join(folderPath, filename);
-      player.addToQueue(filePath, audioType.Sixtolo, undefined, filename)
+      await player.addToQueue(filePath, audioType.Sixtolo, undefined, filename)
       if (player.isPlaying) {
         const nextSong = player.queue.nextSong()
         const embed = createSongEmbed(nextSong!, "Queued Sixtolo: ")
         await interaction.reply({ embeds: [embed] })
       }
-      player.playAudio(voiceChannel, interaction)
+      await player.playAudio(voiceChannel, interaction)
     }
     else if (subcommand === 'list') {
       if (!files.length) {
@@ -67,13 +67,13 @@ module.exports = {
       const filename = interaction.options.getString('filename');
       if (files.includes(`${filename}.mp3`)) {
         const filePath = path.join(folderPath, `${filename}.mp3`);
-        player.addToQueue(filePath, audioType.Sixtolo, undefined, filename!)
+        await player.addToQueue(filePath, audioType.Sixtolo, undefined, filename!)
         if (player.isPlaying) {
           const nextSong = player.queue.nextSong()
           const embed = createSongEmbed(nextSong!, "Queued Sixtolo: ")
           await interaction.reply({ embeds: [embed] })
         } else {
-          player.playAudio(voiceChannel, interaction)
+          await player.playAudio(voiceChannel, interaction)
         }
       } else {
         await interaction.reply(`The audio file "${filename}.mp3" was not found in the sixtolo folder.`);
