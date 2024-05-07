@@ -1,28 +1,31 @@
-import {ActivityType, Client, Collection, Events, GatewayIntentBits, REST, Routes,} from "discord.js";
+import {ActivityType, Client, Collection, Events, GatewayIntentBits, Guild, REST, Routes,} from "discord.js";
 import fs from "fs";
 import path from "path";
-import {AudioPlayerStatus, generateDependencyReport} from "@discordjs/voice";
+import {generateDependencyReport} from "@discordjs/voice";
 import {Command, config} from "../utils";
-import player, {Player} from "./Player";
+import {Player} from "./Player";
 
 class Meneo extends Client {
     commands: Collection<string, Command>;
-    GuildList?: string[]
+    GuildList?: Guild[];
+    players: Map<Guild, Player>;
     constructor() {
         super({
             intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
         });
-
+        
         console.log(generateDependencyReport());
         this.commands = new Collection();
+        this.players = new Map();
+        
         this.login(config.Token);
         
         // -- Event Handling -- 
         //Client Ready
         this.on(Events.ClientReady, interaction => {
             console.log(`Ready! Logged in as ${interaction.user.tag}`);
-
-            this.GuildList = this.getGuildIds();
+            
+            this.GuildList = this.getGuilds();
             this.startBot();
             
             interaction.user.setPresence({
@@ -30,35 +33,6 @@ class Meneo extends Client {
                 status: 'online',
             });
         })
-
-        // Player Event
-        player.AudioPlayer.on('stateChange', (oldState, newState) => {
-            console.log(`Audio player transitioned from ${oldState.status} to ${newState.status}`);
-        });
-
-        player.AudioPlayer.on(AudioPlayerStatus.Idle, () => {
-            this.user!.setPresence({activities: [{name: 'a ver que pasa...', type: ActivityType.Watching}]})
-            player.isPlaying = false;
-            player.playAudio()
-            if (player.connection) {
-                startIdleTimer(player)
-            }
-            console.log("Now Playing?: ", player.isPlaying)
-        });
-
-        player.AudioPlayer.on(AudioPlayerStatus.Playing, () => {
-            player.isPlaying = true;
-            this.user!.setPresence({
-                activities: [{
-                    name: player.currentSong!.name! ?? player.currentSong!.filename!,
-                    type: ActivityType.Listening
-                }]
-            })
-            console.log("Now Playing?: ", player.isPlaying)
-            if (player.connection !== undefined) {
-                resetIdleTimer()
-            }
-        });
         
         //Command Interaction
         this.on(Events.InteractionCreate, async interaction => {
@@ -72,45 +46,35 @@ class Meneo extends Client {
                 await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
             }
         });
-
-        // TIMER
-        // Time in milliseconds
-        const idleTimeout = 60 * 1000; // 2 minutes 2*60*1000
-        let idleTimeoutID: NodeJS.Timeout;
-
-        function startIdleTimer(player: Player) {
-            idleTimeoutID = setTimeout(() => {
-                if (!player.connection) {
-                    console.log("Connection already destroyed")
-                }
-                player.stop()
-                console.log("Connection disconnected manually by TimeOut Function")
-
-                // Additional logic or messages you may want to include after destroying the connection
-            }, idleTimeout);
-        }
-        function resetIdleTimer() {
-            clearTimeout(idleTimeoutID);
-        }
-        
     }
 
     async startBot() {
         await this.clearCache()
         await this.loadCommands()
         await this.deployCommands()
+        await this.createPlayers()
     }
     
-    getGuildIds(){
+    getGuilds(): Guild[]{
         try {
             // Fetch all guilds the bot is connected to
             const guilds = this.guilds.cache;
 
-            // Extract guild IDs
-            return guilds.map(guild => guild.id);
+            // Return an array of Guild objects
+            return Array.from(guilds.values());
         } catch (error) {
-            console.error('Error fetching guild IDs:', error);
+            console.error('Error fetching guilds:', error);
             return [];
+        }
+    }
+    
+    async createPlayers() {
+        for (const guild of this.GuildList!) {
+            if (!this.players.has(guild)) {
+                const player = new Player(guild);
+                this.players.set(guild, player);
+                console.log("Player created! for Guild:", guild.name);
+            }
         }
     }
     
@@ -122,9 +86,9 @@ class Meneo extends Client {
             {body: []}
         );
 
-        const guildCommandsPromise = this.GuildList!.map(guildId => {
+        const guildCommandsPromise = this.GuildList!.map(guild => {
             return rest.put(
-                Routes.applicationGuildCommands(config.ClientID!, guildId),
+                Routes.applicationGuildCommands(config.ClientID!, guild.id),
                 { body: [] }
             );
         });
@@ -167,13 +131,13 @@ class Meneo extends Client {
             const commands = Array.from(this.commands.values()).map(command => command.data.toJSON());
 
             console.log(`Started refreshing ${commands.length} application (/) commands.`);
-
-            for (const guildId of this.GuildList!) {
+            
+            for (const guild of this.GuildList!) {
                 const data: any = await rest.put(
-                    Routes.applicationGuildCommands(config.ClientID, guildId),
+                    Routes.applicationGuildCommands(config.ClientID, guild.id),
                     { body: commands }
                 );
-                console.log(`Successfully reloaded ${data.length} application (/) commands for guild ${guildId}.`);
+                console.log(`Successfully reloaded ${data.length} application (/) commands for guild ${guild.name}.`);
             }
         } catch (error) {
             console.error('Error deploying commands:', error);
