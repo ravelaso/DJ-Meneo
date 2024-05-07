@@ -57,10 +57,7 @@ class Meneo extends Client {
     
     getGuilds(): Guild[]{
         try {
-            // Fetch all guilds the bot is connected to
             const guilds = this.guilds.cache;
-
-            // Return an array of Guild objects
             return Array.from(guilds.values());
         } catch (error) {
             console.error('Error fetching guilds:', error);

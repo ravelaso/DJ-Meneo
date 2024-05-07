@@ -167,10 +167,10 @@ export class Player {
         }
     }
 
-    // async skip() {
-    //     this.AudioPlayer.stop()
-    //     await this.playAudio();
-    // }
+    async skip() {
+        this.AudioPlayer.stop()
+        await this.playAudio();
+    }
 
     // async pause() {
     //   this.AudioPlayer.pause()
