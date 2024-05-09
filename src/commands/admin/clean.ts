@@ -1,0 +1,21 @@
+import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
+import {ChatInputCommandInteraction} from "discord.js";
+import client from "../../structure/Client";
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("clean")
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDescription("Clean Cache of Bot and Commands"),
+
+    async execute(interaction: ChatInputCommandInteraction) {
+        interaction.guild!.members.cache.get(interaction.user.id);
+        await client.clearCache();
+
+        await interaction.reply({
+            content: "Bot commands reloaded to all servers",
+            ephemeral: false,
+        });
+        return;
+    }
+}

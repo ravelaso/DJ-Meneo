@@ -1,7 +1,7 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import player from "../../structure/Player";
-import { config } from "../../utils";
-import { createSongEmbed } from "../../utils/embeds";
+import {ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js";
+import {config} from "../../utils";
+import {createSongEmbed} from "../../utils/embeds";
+import bot from "../../structure/Client";
 
 
 module.exports = {
@@ -10,6 +10,16 @@ module.exports = {
         .setDescription("Plays the Trial of The Crusader / Sixtolo - Playlist"),
 
     async execute(interaction: ChatInputCommandInteraction) {
+        const guildId = interaction.guild!;
+        const guildPlayer = bot.players.get(guildId);
+
+        if (!guildPlayer) {
+            await interaction.reply({
+                content: "There is no player associated with this guild.",
+                ephemeral: true,
+            });
+            return;
+        }
         const guildMember = interaction.guild!.members.cache.get(interaction.user.id)
         const channel = guildMember!.voice.channel;
         if (!channel) {
@@ -19,14 +29,14 @@ module.exports = {
             });
             return;
         }
-        await player.addPlaylistToQueue(config.TOCPlaylist)
-        if (player.isPlaying) {
-            const nextSong = player.queue.nextSong()
-            const embed = createSongEmbed(nextSong!,"Queued Playlist: ")
-            await interaction.reply({embeds:[embed]})
+        await guildPlayer.addPlaylistToQueue(config.TOCPlaylist)
+        if (guildPlayer.isPlaying) {
+            const nextSong = guildPlayer.queue.nextSong()
+            const embed = createSongEmbed(nextSong!, "Queued Playlist: ")
+            await interaction.reply({embeds: [embed]})
         } else {
-          await interaction.deferReply()
-          await player.playAudio(channel, interaction)
+            await interaction.deferReply()
+            await guildPlayer.playAudio(channel, interaction)
         }
     }
 }
