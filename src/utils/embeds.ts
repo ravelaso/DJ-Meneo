@@ -25,6 +25,7 @@ export function createSongEmbed(song: Song, text?: string): EmbedBuilder {
         return new EmbedBuilder()
     }
 }
+
 export function createHelpEmbed() {
     const cachedCommands = bot.commands
     const embed = new EmbedBuilder()

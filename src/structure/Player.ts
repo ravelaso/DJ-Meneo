@@ -30,6 +30,8 @@ export class Player {
         this.currentSong = undefined;
         this.resource = undefined;
         this.guild = guild;
+
+
         // Player Event
         this.AudioPlayer.on('stateChange', (oldState, newState) => {
             console.log(`Audio player transitioned from ${oldState.status} to ${newState.status}`);

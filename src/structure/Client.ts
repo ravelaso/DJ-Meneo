@@ -9,41 +9,57 @@ class Meneo extends Client {
     commands: Collection<string, Command>;
     GuildList?: Guild[];
     players: Map<Guild, Player>;
+
     constructor() {
         super({
             intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
         });
-        
+
         console.log(generateDependencyReport());
         this.commands = new Collection();
         this.players = new Map();
-        
+
         this.login(config.Token);
-        
-        // -- Event Handling -- 
+
+        // -- Event Handling --
         //Client Ready
         this.on(Events.ClientReady, interaction => {
             console.log(`Ready! Logged in as ${interaction.user.tag}`);
-            
+
             this.GuildList = this.getGuilds();
             this.startBot();
-            
+
             interaction.user.setPresence({
                 activities: [{name: 'a ver que pasa...', type: ActivityType.Watching}],
                 status: 'online',
             });
         })
-        
+
         //Command Interaction
         this.on(Events.InteractionCreate, async interaction => {
-            if (!interaction.isChatInputCommand()) return;
-            const command = this.commands.get(interaction.commandName);
-            if (!command) return;
-            try {
-                await command.execute(interaction);
-            } catch (error) {
-                console.error(error);
-                await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+            if (interaction.isChatInputCommand()) {
+                const command = this.commands.get(interaction.commandName);
+                if (!command) return;
+                try {
+                    await command.execute(interaction);
+                } catch (error) {
+                    console.error(error);
+                    await interaction.reply({
+                        content: 'There was an error while executing this command!',
+                        ephemeral: true
+                    });
+                }
+            } else if (interaction.isAutocomplete()) {
+                const command = this.commands.get(interaction.commandName);
+                if (!command) {
+                    console.error(`No command matching ${interaction.commandName} was found.`);
+                    return;
+                }
+                try {
+                    await command.autocomplete!(interaction);
+                } catch (error) {
+                    console.error(error);
+                }
             }
         });
     }
@@ -54,8 +70,8 @@ class Meneo extends Client {
         await this.deployCommands()
         await this.createPlayers()
     }
-    
-    getGuilds(): Guild[]{
+
+    getGuilds(): Guild[] {
         try {
             const guilds = this.guilds.cache;
             return Array.from(guilds.values());
@@ -64,7 +80,7 @@ class Meneo extends Client {
             return [];
         }
     }
-    
+
     async createPlayers() {
         for (const guild of this.GuildList!) {
             if (!this.players.has(guild)) {
@@ -74,7 +90,7 @@ class Meneo extends Client {
             }
         }
     }
-    
+
     async clearCache() {
         const rest = new REST().setToken(config.Token!);
 
@@ -86,12 +102,12 @@ class Meneo extends Client {
         const guildCommandsPromise = this.GuildList!.map(guild => {
             return rest.put(
                 Routes.applicationGuildCommands(config.ClientID!, guild.id),
-                { body: [] }
+                {body: []}
             );
         });
-        
+
         try {
-            await Promise.all([guildCommandsPromise,globalCommandsPromise]);
+            await Promise.all([guildCommandsPromise, globalCommandsPromise]);
             console.log("Successfully deleted all guild and application commands.");
         } catch (error) {
             console.error(error);
@@ -121,18 +137,18 @@ class Meneo extends Client {
             }
         }
     }
-    
+
     async deployCommands() {
         const rest = new REST().setToken(config.Token!);
         try {
             const commands = Array.from(this.commands.values()).map(command => command.data.toJSON());
 
             console.log(`Started refreshing ${commands.length} application (/) commands.`);
-            
+
             for (const guild of this.GuildList!) {
                 const data: any = await rest.put(
                     Routes.applicationGuildCommands(config.ClientID, guild.id),
-                    { body: commands }
+                    {body: commands}
                 );
                 console.log(`Successfully reloaded ${data.length} application (/) commands for guild ${guild.name}.`);
             }

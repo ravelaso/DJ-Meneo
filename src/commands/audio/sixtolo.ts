@@ -1,4 +1,4 @@
-import {SlashCommandBuilder} from "discord.js"
+import {AutocompleteInteraction, SlashCommandBuilder} from "discord.js"
 import path from "path"
 import fs from "fs"
 import {ChatInputCommandInteraction} from "discord.js"
@@ -25,13 +25,28 @@ module.exports = {
                         .setName("filename")
                         .setDescription("The name of the audio file")
                         .setRequired(true)
+                        .setAutocomplete(true)
                 )
         ),
-    //.toJSON(),
+    async autocomplete(interaction: AutocompleteInteraction){
+        interaction.options.getFocused();
+        interaction.options.getSubcommand();
+        const folderPath = path.resolve(__dirname, '..', '..', 'public', 'sixtolo');
+        const choices = fs.readdirSync(folderPath).filter(file => file.endsWith('.mp3'));
+
+        // Filter out the extension and shuffle the array
+        const shuffledChoices = choices.map(choice => choice.slice(0, -4)).sort(() => Math.random() - 0.5);
+
+        // Select the first 25 elements or if there are fewer choices
+        const filtered = shuffledChoices.slice(0, Math.min(25, shuffledChoices.length));
+
+        await interaction.respond(
+            filtered.map(choice => ({ name: choice, value: choice })),
+        );
+    },
     async execute(interaction: ChatInputCommandInteraction) {
         const guildId = interaction.guild!;
         const guildPlayer = bot.players.get(guildId);
-
         if (!guildPlayer) {
             await interaction.reply({
                 content: "There is no player associated with this guild.",
@@ -61,7 +76,8 @@ module.exports = {
                 await interaction.reply({embeds: [embed]})
             }
             await guildPlayer.playAudio(voiceChannel, interaction)
-        } else if (subcommand === 'list') {
+        }
+        else if (subcommand === 'list') {
             if (!files.length) {
                 return await interaction.reply({
                     content: 'No .mp3 files found in the sixtolo folder.',
@@ -71,7 +87,8 @@ module.exports = {
             const fileList = files.map(file => `${file.slice(0, -4)}`).join('\n🔊  ');
             const embed = createSixtoloEmbed(fileList)
             await interaction.reply({embeds: [embed], ephemeral: true});
-        } else if (subcommand === 'play') {
+        }
+        else if (subcommand === 'play') {
             if (!voiceChannel) {
                 return await interaction.reply('You need to be in a voice channel to use this command.');
             }
