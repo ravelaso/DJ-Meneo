@@ -21,3 +21,8 @@ Have a look at it, use what you think is useful.
   ```shell
   docker build -t user/repo:tag .
   ```
+
+5. Docker run
+```shell
+sudo docker run --name dj-meneo --restart always docker/hub:tag
+ ```

@@ -1,4 +1,5 @@
 import { Song, audioType} from "../utils";
+import { Logger } from "./Logger";
 export default class Queue {
   private songs: Song[];
   constructor() {
@@ -12,7 +13,7 @@ export default class Queue {
       filename: filename,
       thumbnail: thumbnail
     };
-    console.log(`Song pushed to Queue: ${song}`)
+    Logger.LogMessage("Song pushed to Queue:" , `{ \n${song.name ?? song.filename} \nUrl: ${song.url} \n}`)
     this.songs.push(song);
   }
   public nextSong(): Song | undefined {
