@@ -1,6 +1,40 @@
-import {EmbedBuilder} from 'discord.js';
+import {ActionRowBuilder, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from 'discord.js';
 import {audioType, config, Song} from '.';
 import bot from '../structure/Client';
+
+
+
+export function createModal(){
+    const modal = new ModalBuilder()
+			.setCustomId('myModal')
+			.setTitle('My Modal');
+
+		// Add components to modal
+
+		// Create the text input components
+		const title = new TextInputBuilder()
+			.setCustomId('titlePoll')
+		    // The label is the prompt the user sees for this input
+			.setLabel("What's the poll about?")
+		    // Short means only a single line of text
+			.setStyle(TextInputStyle.Short);
+
+		const pollOptions = new TextInputBuilder()
+			.setCustomId('pollOptions')
+			.setLabel("What's some of your favorite hobbies?")
+		    // Paragraph means multiple lines of text.
+			.setStyle(TextInputStyle.Paragraph);
+
+		// An action row only holds one text input,
+		// so you need one action row per text input.
+		const firstActionRow = new ActionRowBuilder().addComponents(title);
+		const secondActionRow = new ActionRowBuilder().addComponents(pollOptions);
+        // Add inputs to the modal
+        //@ts-ignore
+		modal.addComponents(firstActionRow, secondActionRow);
+        return modal
+}
+
 
 export function createSongEmbed(song: Song, text?: string): EmbedBuilder {
     if (song.type === audioType.Sixtolo) {
