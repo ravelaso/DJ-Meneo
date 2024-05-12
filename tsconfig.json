@@ -11,5 +11,5 @@
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true
-  },
+  }
 }
