@@ -5,6 +5,7 @@ import {ChatInputCommandInteraction} from "discord.js"
 import {audioType} from "../../utils"
 import {createSixtoloEmbed, createSongEmbed} from "../../utils/embeds"
 import bot from "../../structure/Client";
+import { Logger } from "../../structure/Logger"
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -54,7 +55,7 @@ module.exports = {
             });
             return;
         }
-        console.log('Sixtolo command received');
+        Logger.LogMessage('Sixtolo command received');
         const guildMember = interaction.guild!.members.cache.get(interaction.user.id)
         const voiceChannel = guildMember!.voice.channel;
         const subcommand = interaction.options.getSubcommand();

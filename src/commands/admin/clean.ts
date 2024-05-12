@@ -1,6 +1,6 @@
 import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {ChatInputCommandInteraction} from "discord.js";
-import client from "../../structure/Client";
+import bot from "../../structure/Client";
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports = {
 
     async execute(interaction: ChatInputCommandInteraction) {
         interaction.guild!.members.cache.get(interaction.user.id);
-        await client.clearCache();
+        await bot.clearCache();
 
         await interaction.reply({
             content: "Bot commands reloaded to all servers",

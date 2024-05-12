@@ -6,12 +6,13 @@ import {
     AudioPlayer,
     AudioResource, AudioPlayerStatus,
 } from "@discordjs/voice";
-import {YouTube} from "youtube-sr";
+import { YouTube } from "youtube-sr";
 import Queue from "./Queue";
 import play from "play-dl";
-import {audioType, Song, urlType} from "../utils";
-import {ActivityType, ChatInputCommandInteraction, Guild, VoiceBasedChannel} from "discord.js";
-import {createSongEmbed} from "../utils/embeds";
+import { audioType, Song, urlType } from "../utils";
+import { ActivityType, ChatInputCommandInteraction, Guild, VoiceBasedChannel } from "discord.js";
+import { createSongEmbed } from "../utils/embeds";
+import { Logger } from "./Logger";
 
 export class Player {
     guild: Guild;
@@ -34,17 +35,17 @@ export class Player {
 
         // Player Event
         this.AudioPlayer.on('stateChange', (oldState, newState) => {
-            console.log(`Audio player transitioned from ${oldState.status} to ${newState.status}`);
+            Logger.LogMessage(`Audio player transitioned from ${oldState.status} to ${newState.status}`);
         });
 
         this.AudioPlayer.on(AudioPlayerStatus.Idle, () => {
-            guild.client.user.setPresence({activities: [{name: 'a ver que pasa...', type: ActivityType.Watching}]})
+            guild.client.user.setPresence({ activities: [{ name: 'a ver que pasa...', type: ActivityType.Watching }] })
             this.isPlaying = false;
             this.playAudio()
             if (this.connection) {
                 startIdleTimer(this)
             }
-            console.log("Now Playing?: ", this.isPlaying)
+            Logger.LogMessage("Now Playing?: ", this.isPlaying)
         });
 
         this.AudioPlayer.on(AudioPlayerStatus.Playing, () => {
@@ -55,7 +56,7 @@ export class Player {
                     type: ActivityType.Listening
                 }]
             })
-            console.log("Now Playing?: ", this.isPlaying)
+            Logger.LogMessage("Now Playing?: ", this.isPlaying)
             if (this.connection !== undefined) {
                 resetIdleTimer()
             }
@@ -69,10 +70,10 @@ export class Player {
         function startIdleTimer(player: Player) {
             idleTimeoutID = setTimeout(() => {
                 if (!player.connection) {
-                    console.log("Connection already destroyed")
+                    Logger.LogMessage("Connection already destroyed")
                 }
                 player.stop()
-                console.log("Connection disconnected manually by TimeOut Function")
+                Logger.LogMessage("Connection disconnected manually by TimeOut Function")
 
                 // Additional logic or messages you may want to include after destroying the connection
             }, idleTimeout);
@@ -88,7 +89,7 @@ export class Player {
         if (this.connection) {
             return
         }
-        console.log("Creating voice connection")
+        Logger.LogMessage("Creating voice connection")
         this.connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
@@ -105,26 +106,26 @@ export class Player {
             if (this.queue.isEmpty()) {
                 this.currentSong = undefined;
                 this.AudioPlayer.stop(true);
-                console.log("Queue is Empty! Returning");
+                Logger.LogMessage("Queue is Empty! Returning");
                 return
             }
             await this.createConnection(channel!);
             this.currentSong = this.queue.shiftSong()
-            console.log(this.currentSong)
+            Logger.LogMessage("Fetching: ",this.currentSong?.name ?? this.currentSong?.filename)
             if (this.currentSong === undefined) {
-                console.log("Could not fetch Song");
+                Logger.LogMessage("Could not fetch Song");
                 return
             }
             if (this.currentSong.type === audioType.Sixtolo) {
-                console.log("Playing Sixtolo");
+                Logger.LogMessage("Playing Sixtolo");
                 this.resource = createAudioResource(this.currentSong.url)
                 this.AudioPlayer!.play(this.resource)
                 if (interaction) {
                     const embed = createSongEmbed(this.currentSong, "Now Playing:");
-                    await interaction.reply({embeds: [embed]});
+                    await interaction.reply({ embeds: [embed] });
                 }
             } else if (this.currentSong.type === audioType.Youtube) {
-                console.log("Playing Youtube");
+                Logger.LogMessage("Playing Youtube");
                 const stream = await play.stream(this.currentSong.url)
                 this.resource = createAudioResource(stream.stream, {
                     inputType: stream.type
@@ -132,11 +133,11 @@ export class Player {
                 this.AudioPlayer.play(this.resource)
                 if (interaction) {
                     const embed = createSongEmbed(this.currentSong, "Now Playing:");
-                    await interaction.editReply({embeds: [embed]});
+                    await interaction.editReply({ embeds: [embed] });
                 }
             }
-        } catch (err) {
-            console.log(err);
+        } catch (err: any) {
+            Logger.Error(err);
         }
     }
 
@@ -145,7 +146,7 @@ export class Player {
         if (!playlistId) {
             throw new Error("Invalid YouTube playlist URL");
         }
-        const playlist = await YouTube.getPlaylist(playlistId);
+        const playlist = await YouTube.getPlaylist(playlistUrl);
         const videos = await playlist.fetch();
         for (const video of videos) {
             const url = `https://www.youtube.com/watch?v=${video.id}`
@@ -178,6 +179,7 @@ export class Player {
     //   this.AudioPlayer.pause()
     //   setTimeout(() => this.AudioPlayer.unpause(), 15_000);
     // }
+
     public checkInput(input: string) {
         const youtubeVideoPattern = /^(https?:\/\/)?(www\.)?(m\.|music\.)?(youtube\.com|youtu\.?be)\/.+/;
         const youtubePlaylistPattern = input.match(/list=([a-zA-Z0-9_-]+)/)?.[1];
@@ -193,6 +195,23 @@ export class Player {
             return urlType.soundcloud;
         }
         return urlType.unknown;
+    }
+
+    public getSingleVideoURL(input: string): string {
+        // Define the regex pattern to match YouTube video URLs
+        const youtubeVideoPattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/watch\?v=([a-zA-Z0-9_-]+)/;
+
+        // Use regex to match and extract the video ID from the input URL
+        const match = input.match(youtubeVideoPattern);
+
+        // If a match is found and it contains the video ID
+        if (match && match[4]) {
+            // Construct the cleaned YouTube video URL
+            return `https://www.youtube.com/watch?v=${match[4]}`;
+        } else {
+            // Return the original input if it doesn't match the expected format
+            return input;
+        }
     }
 }
 
