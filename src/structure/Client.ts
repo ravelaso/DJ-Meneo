@@ -37,6 +37,7 @@ class Meneo extends Client {
       Logger.LogMessage("Ready! Logged in as", interaction.user.tag);
 
       this.GuildList = this.getGuilds();
+
       this.startBot();
 
       interaction.user.setPresence({
@@ -87,7 +88,7 @@ class Meneo extends Client {
     this.clearCache();
     this.loadCommands();
     this.deployCommands();
-    this.createPlayers();
+    await this.createPlayers();
   }
 
   getGuilds(): Guild[] {
@@ -100,7 +101,7 @@ class Meneo extends Client {
     }
   }
 
-  createPlayers() {
+  async createPlayers() {
     for (const guild of this.GuildList!) {
       if (!this.players.has(guild)) {
         const player = new Player(guild);
@@ -169,12 +170,12 @@ class Meneo extends Client {
       );
 
       for (const guild of this.GuildList!) {
-        const data: any = rest.put(
-          Routes.applicationGuildCommands(config.ClientID, guild.id),
-          { body: commands }
-        );
+        rest.put(Routes.applicationGuildCommands(config.ClientID, guild.id), {
+          body: commands,
+        });
         Logger.LogMessage(
-          `Successfully reloaded ${data.length} application (/) commands for guild ${guild.name}.`
+          `Successfully reloaded application (/) commands for guild`,
+          guild.name
         );
       }
     } catch (error: any) {
