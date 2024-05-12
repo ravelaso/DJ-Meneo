@@ -72,15 +72,21 @@ module.exports = {
         await guildPlayer.playAudio(channel, interaction);
       }
     } else if (inputType === urlType.youtubePlaylist) {
-      Logger.LogMessage("Play Youtube Playlist Command Received!");
-      await guildPlayer.addPlaylistToQueue(input);
-      if (guildPlayer.isPlaying) {
-        const nextSong = guildPlayer.queue.nextSong();
-        const embed = createSongEmbed(nextSong!, "Queued Playlist: ");
-        await interaction.reply({ embeds: [embed] });
-      } else {
-        await interaction.deferReply();
-        await guildPlayer.playAudio(channel, interaction);
+      try {
+        Logger.LogMessage("Play Youtube Playlist Command Received!");
+        await guildPlayer.addPlaylistToQueue(input);
+        if (guildPlayer.isPlaying) {
+          const nextSong = guildPlayer.queue.nextSong();
+          const embed = createSongEmbed(nextSong!, "Queued Playlist: ");
+          await interaction.reply({ embeds: [embed] });
+        } else {
+          await interaction.deferReply();
+          await guildPlayer.playAudio(channel, interaction);
+        }
+      } catch {
+        await interaction.reply(
+          "Error playing the playlist, is the playlist public?"
+        );
       }
     } else if (inputType === urlType.unknown) {
       const yt = await YouTube.searchOne(input);
