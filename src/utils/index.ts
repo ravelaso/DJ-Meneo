@@ -1,12 +1,13 @@
 import {AutocompleteInteraction, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import dotenv from "dotenv"
+
 dotenv.config()
 
 export const config = {
-  Token: process.env.Token!,
-  ClientID: process.env.ClientID!,
-  SixtoloIMG: process.env.SixtoloIMG!,
-  TOCPlaylist: process.env.TOCPlaylist!
+    Token: process.env.Token!,
+    ClientID: process.env.ClientID!,
+    SixtoloIMG: process.env.SixtoloIMG!,
+    TOCPlaylist: process.env.TOCPlaylist!
 }
 
 // Types
@@ -23,10 +24,11 @@ export enum audioType {
 }
 
 export enum urlType {
-  youtubeVideo,
-  youtubePlaylist,
-  soundcloud,
-  unknown
+    youtubeVideo,
+    youtubePlaylist,
+    youtubeShorts,
+    soundcloud,
+    unknown
 }
 
 // Interfaces
@@ -36,7 +38,7 @@ export interface Song {
     name?: string;
     filename?: string;
     thumbnail?: string;
-  }
+}
 
 
 

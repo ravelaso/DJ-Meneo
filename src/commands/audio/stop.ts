@@ -1,35 +1,35 @@
-import { SlashCommandBuilder } from "discord.js";
-import { ChatInputCommandInteraction } from "discord.js";
+import {SlashCommandBuilder} from "discord.js";
+import {ChatInputCommandInteraction} from "discord.js";
 import bot from "../../structure/Client";
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName("stop")
-    .setDescription("Stops the audio player, also disconnects the bot"),
+    data: new SlashCommandBuilder()
+        .setName("stop")
+        .setDescription("Stops the audio player, also disconnects the bot"),
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const guildMember = interaction.guild!.members.cache.get(
-      interaction.user.id
-    );
-    const channel = guildMember!.voice.channel;
-    const guildId = interaction.guild!;
-    const guildPlayer = bot.players.get(guildId);
+    async execute(interaction: ChatInputCommandInteraction) {
+        const guildMember = interaction.guild!.members.cache.get(
+            interaction.user.id
+        );
+        const channel = guildMember!.voice.channel;
+        const guildId = interaction.guild!;
+        const guildPlayer = bot.players.get(guildId);
 
-    if (!guildPlayer) {
-      await interaction.reply({
-        content: "There is no player associated with this guild.",
-        ephemeral: true,
-      });
-      return;
-    }
-    if (!channel) {
-      await interaction.reply({
-        content: "You must be in a voice channel to use this command.",
-        ephemeral: true,
-      });
-      return;
-    }
-    await guildPlayer.stop();
-    await interaction.reply("Player Stopped and Bot Disconnected");
-  },
+        if (!guildPlayer) {
+            await interaction.reply({
+                content: "There is no player associated with this guild.",
+                ephemeral: true,
+            });
+            return;
+        }
+        if (!channel) {
+            await interaction.reply({
+                content: "You must be in a voice channel to use this command.",
+                ephemeral: true,
+            });
+            return;
+        }
+        await guildPlayer.stop();
+        await interaction.reply("Player Stopped and Bot Disconnected");
+    },
 };
