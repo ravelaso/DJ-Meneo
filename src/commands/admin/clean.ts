@@ -1,8 +1,6 @@
 import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {ChatInputCommandInteraction} from "discord.js";
 import bot from "../../structure/Client";
-import {Logger} from "../../structure/Logger";
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("clean")
