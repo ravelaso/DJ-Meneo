@@ -21,7 +21,7 @@
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
     "libsodium-wrappers": "^0.7.13",
-    "play-dl": "^1.9.7",
-    "youtube-sr": "^4.3.11"
+    "youtube-sr": "^4.3.11",
+    "yt-stream": "^1.5.8"
   }
 }
