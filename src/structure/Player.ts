@@ -9,7 +9,8 @@ import {
 } from "@discordjs/voice";
 import {YouTube} from "youtube-sr";
 import Queue from "./Queue";
-import play from "play-dl";
+// import play from "play-dl";
+import yt from "yt-stream";
 import {audioType, Song, urlType} from "../utils";
 import {
     ActivityType,
@@ -146,10 +147,13 @@ export class Player {
                 }
             } else if (this.currentSong.type === audioType.Youtube) {
                 Logger.LogMessage("Playing Youtube");
-                const stream = await play.stream(this.currentSong.url);
-                this.resource = createAudioResource(stream.stream, {
-                    inputType: stream.type,
+                const stream = await yt.stream(this.currentSong.url, {
+                    quality: 'high',
+                    type: 'audio',
+                    highWaterMark: 1048576 * 32,
+                    download: true
                 });
+                this.resource = createAudioResource(stream.stream);
                 this.AudioPlayer.play(this.resource);
                 if (interaction) {
                     const embed = createSongEmbed(this.currentSong, "Now Playing:");

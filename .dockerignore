@@ -4,3 +4,4 @@ node_modules
 package-lock.lock
 copySounds.js
 .gitignore
+.idea/
