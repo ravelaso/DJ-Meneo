@@ -38,7 +38,8 @@ export class Player {
         this.currentSong = undefined;
         this.resource = undefined;
         this.guild = guild;
-
+        yt.setApiKey("AIzaSyDNfC5nO8Z9ZUjo-fesX9v0DKZn6i4EUwo")
+        yt.setPreference('api','IOS')
         // Player Event
         this.AudioPlayer.on("stateChange", (oldState, newState) => {
             Logger.LogMessage(
