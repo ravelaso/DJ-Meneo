@@ -11,7 +11,7 @@ import {YouTube} from "youtube-sr";
 import Queue from "./Queue";
 // import play from "play-dl";
 import yt from "yt-stream";
-import {audioType, Song, urlType} from "../utils";
+import {audioType, config, Song, urlType} from "../utils";
 import {
     ActivityType,
     ChatInputCommandInteraction,
@@ -38,7 +38,8 @@ export class Player {
         this.currentSong = undefined;
         this.resource = undefined;
         this.guild = guild;
-
+        yt.setApiKey(config.YoutubeAPI)
+        yt.setPreference('api','IOS')
         // Player Event
         this.AudioPlayer.on("stateChange", (oldState, newState) => {
             Logger.LogMessage(

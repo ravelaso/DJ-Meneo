@@ -7,7 +7,8 @@ export const config = {
     Token: process.env.Token!,
     ClientID: process.env.ClientID!,
     SixtoloIMG: process.env.SixtoloIMG!,
-    TOCPlaylist: process.env.TOCPlaylist!
+    TOCPlaylist: process.env.TOCPlaylist!,
+    YoutubeAPI: process.env.YoutubeAPI!
 }
 
 // Types
