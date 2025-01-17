@@ -57,7 +57,7 @@ jobs:
     #    with: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
      - name: Build the Docker image
-       run: docker build . --file Dockerfile --tag ghcr.io/dj-meneo/prod:latest
+       run: docker build . --file Dockerfile --tag ghcr.io/ravelaso/dj-meneo-prod:latest
 
      - name: Push Docker image to GitHub Packages
-       run: docker push ghcr.io/dj-meneo/prod:latest
+       run: docker push ghcr.io/ravelaso/dj-meneo-prod:latest
