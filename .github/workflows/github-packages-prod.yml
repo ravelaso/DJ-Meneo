@@ -1,4 +1,4 @@
-name: Docker Deploy Package
+name: Github Deploy Package
 
 on:
   push:
@@ -8,19 +8,28 @@ on:
       - closed
     branches: ["main"]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   if_merged:
     if: github.event.pull_request.merged == true || github.event_name == 'push'
     runs-on: ubuntu-latest
+    
     steps:
      - name: Checkout repository
-       uses: actions/checkout@v3
+       uses: actions/checkout@v4
+
      - name: Install Node.js and npm
-       uses: actions/setup-node@v3
+       uses: actions/setup-node@v4
+
      - name: Install dependencies
        run: npm install
+
      - name: Build project
        run: npm run build
+
      - name: Create .env file
        run: | 
         echo "Token=${{ secrets.BOT_TOKEN_PROD }}" > .env
@@ -29,12 +38,20 @@ jobs:
         echo "SixtoloIMG=${{ secrets.BOT_SIXTOLOIMG }}" >> .env
         echo "TOCPlaylist=${{ secrets.BOT_TOCPLAYLIST }}" >> .env
         echo "YoutubeAPI=${{ secrets.YOUTUBE_API}}" >> .env
-     - name: Login to Docker
-       uses: docker/login-action@v2
+
+     - name: Login to GitHub Container Registry
+       uses: docker/login-action@v3
        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    #  - name: Extract metadata
+    #    uses: docker/metadata-action@v5
+    #    with: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
      - name: Build the Docker image
-       run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_REPO_PROD }}
-     - name: Push Docker image to hub
-       run: docker push ${{ secrets.DOCKER_REPO_PROD }}
+       run: docker build . --file Dockerfile --tag ghcr.io/ravelaso/dj-meneo-prod:latest
+
+     - name: Push Docker image to GitHub Packages
+       run: docker push ghcr.io/ravelaso/dj-meneo-prod:latest
