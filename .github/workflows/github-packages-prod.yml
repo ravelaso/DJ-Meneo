@@ -2,11 +2,11 @@ name: Github Deploy Package
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
   pull_request:
     types:
       - closed
-    branches: ["dev"]
+    branches: ["main"]
 
 env:
   REGISTRY: ghcr.io
@@ -16,13 +16,7 @@ jobs:
   if_merged:
     if: github.event.pull_request.merged == true || github.event_name == 'push'
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-
+    
     steps:
      - name: Checkout repository
        uses: actions/checkout@v4
