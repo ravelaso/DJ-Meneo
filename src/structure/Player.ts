@@ -38,8 +38,7 @@ export class Player {
         this.currentSong = undefined;
         this.resource = undefined;
         this.guild = guild;
-        yt.setApiKey(config.YoutubeAPI)
-        yt.setPreference('api','IOS')
+        yt.cookie = config.YoutubeAPI;
         // Player Event
         this.AudioPlayer.on("stateChange", (oldState, newState) => {
             Logger.LogMessage(
