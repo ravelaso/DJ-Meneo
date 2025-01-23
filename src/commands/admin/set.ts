@@ -33,6 +33,18 @@ module.exports = {
                         .setDescription("The URL for ToC Playlist")
                         .setRequired(true)
                 )
+                
+        )
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName("youtube-cookie")
+                .setDescription("Sets Cookie for Youtube")
+                .addStringOption((option: SlashCommandStringOption) =>
+                    option
+                        .setName("cookie")
+                        .setDescription("The Cookie for Youtube")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction: ChatInputCommandInteraction) {
         const subcommand = interaction.options.getSubcommand();
@@ -51,6 +63,12 @@ module.exports = {
                 `Changed playlist for /toc to: ${input}`
             );
             await interaction.reply({embeds: [embed], ephemeral: true});
+        }else if (subcommand === "youtube-cookie"){
+            config.YoutubeAPI = input;
+            const embed = createGeneralEmbed(
+                "Changed Youtube Cookie",
+                `Changed Youtube Cookie to: ${input}`
+            );
         }
     },
 };
