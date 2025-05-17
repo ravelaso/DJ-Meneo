@@ -9,7 +9,7 @@ export const config = {
     SixtoloIMG: process.env.SixtoloIMG!,
     TOCPlaylist: process.env.TOCPlaylist!,
     YoutubeAPI: process.env.YoutubeAPI!,
-    YTDL_COOKIES: process.env.YTDL_COOKIES!
+    YTDL_COOKIES: "cookies.json"
 }
 
 // Types
