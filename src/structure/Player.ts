@@ -7,19 +7,32 @@ import {
     AudioResource,
     AudioPlayerStatus,
 } from "@discordjs/voice";
-import {YouTube} from "youtube-sr";
+import { YouTube } from "youtube-sr";
 import Queue from "./Queue";
+import fs from "fs";
 // import play from "play-dl";
 import yt from "yt-stream";
-import {audioType, config, Song, urlType} from "../utils";
+import ytdl from "@distube/ytdl-core";
+import { audioType, config, Song, urlType } from "../utils";
 import {
     ActivityType,
     ChatInputCommandInteraction,
     Guild,
     VoiceBasedChannel,
 } from "discord.js";
-import {createSongEmbed} from "../utils/embeds";
-import {Logger} from "./Logger";
+import { createSongEmbed } from "../utils/embeds";
+import { Logger } from "./Logger";
+
+
+// Read cookies JSON from file (relative to your project root)
+const cookiesData = fs.readFileSync(config.YTDL_COOKIES, "utf-8");
+const cookies = JSON.parse(cookiesData);
+console.log("Cookies: ", cookies);
+const agentOptions = {
+    pipelining: 5,
+    maxRedirections: 0,
+};
+const agent = ytdl.createAgent(cookies, agentOptions);
 
 export class Player {
     guild: Guild;
@@ -38,7 +51,8 @@ export class Player {
         this.currentSong = undefined;
         this.resource = undefined;
         this.guild = guild;
-        yt.cookie = config.YoutubeAPI;
+
+
         // Player Event
         this.AudioPlayer.on("stateChange", (oldState, newState) => {
             Logger.LogMessage(
@@ -49,7 +63,7 @@ export class Player {
         this.AudioPlayer.on(AudioPlayerStatus.Idle, () => {
             guild.client.user.setPresence({
                 activities: [
-                    {name: "a ver que pasa...", type: ActivityType.Watching},
+                    { name: "a ver que pasa...", type: ActivityType.Watching },
                 ],
             });
             this.isPlaying = false;
@@ -143,21 +157,23 @@ export class Player {
                 this.AudioPlayer!.play(this.resource);
                 if (interaction) {
                     const embed = createSongEmbed(this.currentSong, "Now Playing:");
-                    await interaction.reply({embeds: [embed]});
+                    await interaction.reply({ embeds: [embed] });
                 }
             } else if (this.currentSong.type === audioType.Youtube) {
                 Logger.LogMessage("Playing Youtube");
-                const stream = await yt.stream(this.currentSong.url, {
-                    quality: 'high',
-                    type: 'audio',
-                    highWaterMark: 1048576 * 32,
-                    download: true
+                const info = await ytdl.getInfo(this.currentSong.url, { agent });
+                const audioStream = ytdl.downloadFromInfo(info, {
+                    agent, // Pass the agent here as well!
+                    filter: (format) => !!format.audioBitrate,
+                    quality: "highestaudio",
+                    highWaterMark: 1 << 25,
+                    dlChunkSize: 0,
                 });
-                this.resource = createAudioResource(stream.stream);
+                this.resource = createAudioResource(audioStream);
                 this.AudioPlayer.play(this.resource);
                 if (interaction) {
                     const embed = createSongEmbed(this.currentSong, "Now Playing:");
-                    await interaction.editReply({embeds: [embed]});
+                    await interaction.editReply({ embeds: [embed] });
                 }
             }
         } catch (err: any) {

@@ -44,6 +44,7 @@ jobs:
         echo "SixtoloIMG=${{ secrets.BOT_SIXTOLOIMG }}" >> .env
         echo "TOCPlaylist=${{ secrets.BOT_TOCPLAYLIST }}" >> .env
         echo "YoutubeAPI=${{ secrets.YOUTUBE_API}}" >> .env
+        echo "${{secrets.Cookies}}" >> cookies.json
 
      - name: Login to GitHub Container Registry
        uses: docker/login-action@v3
