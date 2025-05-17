@@ -1,0 +1,15 @@
+## curl -O https://raw.githubusercontent.com/ravelaso/dj-meneo/main/docker-compose.yml
+version: "3.8"
+
+services:
+  dj-meneo:
+    image: dj-meneo-prod
+    container_name: dj-meneo
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./cookies.json:/app/cookies.json
+    ports:
+      - "3000:3000"  # Adjust this if your app uses a different port
+    environment:
+      - NODE_ENV=production
