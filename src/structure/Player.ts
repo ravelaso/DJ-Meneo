@@ -11,7 +11,6 @@ import { YouTube } from "youtube-sr";
 import Queue from "./Queue";
 import fs from "fs";
 // import play from "play-dl";
-import yt from "yt-stream";
 import ytdl from "@distube/ytdl-core";
 import { audioType, config, Song, urlType } from "../utils";
 import {
