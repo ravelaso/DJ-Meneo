@@ -7,7 +7,6 @@ import {
     AudioResource,
     AudioPlayerStatus,
     demuxProbe,
-    StreamType
 } from "@discordjs/voice";
 import { YouTube } from "youtube-sr";
 import Queue from "./Queue";
