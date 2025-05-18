@@ -85,7 +85,7 @@ class Meneo extends Client {
     }
 
     async startBot() {
-        // this.clearCache();
+        this.clearCache();
         this.loadCommands();
         this.deployCommands();
         await this.createPlayers();
