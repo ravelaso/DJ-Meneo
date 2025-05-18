@@ -6,6 +6,7 @@ import {
     AudioPlayer,
     AudioResource,
     AudioPlayerStatus,
+    demuxProbe,
 } from "@discordjs/voice";
 import { YouTube } from "youtube-sr";
 import Queue from "./Queue";
@@ -160,20 +161,29 @@ export class Player {
                 }
             } else if (this.currentSong.type === audioType.Youtube) {
                 Logger.LogMessage("Playing Youtube");
-                const info = await ytdl.getInfo(this.currentSong.url, { agent });
-                const audioStream = ytdl.downloadFromInfo(info, {
-                    agent, // Pass the agent here as well!
-                    filter: (format) => !!format.audioBitrate,
+                /* 1️⃣  ──────────────  download ONLY the audio  */
+                const stream = ytdl(this.currentSong.url, {
+                    agent,
+                    filter: "audioonly",        // built-in ytdl filter – guarantees NO video
                     quality: "highestaudio",
-                    highWaterMark: 1 << 25,
-                    dlChunkSize: 0,
+                    highWaterMark: 1 << 25,     // 32 MiB buffer eliminates most network hiccups
+                    liveBuffer: 5,
                 });
-                this.resource = createAudioResource(audioStream);
+                /* 2️⃣  ──────────────  let @discordjs/voice detect the container/codec  */
+                const { stream: probed, type } = await demuxProbe(stream);
+
+                /* 3️⃣  ──────────────  create the resource with the correct input type  */
+                this.resource = createAudioResource(probed, { inputType: type });
                 this.AudioPlayer.play(this.resource);
+
+                /* handle unexpected stream errors */
+                stream.once("error", (e) => Logger.Error("YTDL stream error:", e));
+
                 if (interaction) {
                     const embed = createSongEmbed(this.currentSong, "Now Playing:");
                     await interaction.editReply({ embeds: [embed] });
                 }
+
             }
         } catch (err: any) {
             Logger.Error(err);
